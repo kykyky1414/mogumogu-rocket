@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>もぐもぐロケット</title>
+<title>もぐもぐうさぎ</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
-<meta name="theme-color" content="#161a46">
+<meta name="theme-color" content="#7fd36b">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -16,13 +16,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@500;700&display=swap">
 <style>
-  /* レイアウト: 画面いっぱいのキャンバス(空→宇宙→月) + 上に進みぐあい、右下にカメラの小窓 */
+  /* レイアウト: 画面いっぱいのキャンバス(大きな木をのぼる うさぎ) + 上に進みぐあい、右下にカメラの小窓 */
   :root {
     --ink: #1d1a3a;
     --paper: #fffaf0;
     --sun: #ffc93c;
     --flame: #ff7a3d;
-    --sky: #8fd3ff;
+    --sky: #b2e4ff;
     --mint: #4fd1a5;
     --shadow: rgba(20, 16, 50, .45);
     --display: "Mochiy Pop One", "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
@@ -40,7 +40,8 @@
   .count small { font-size: .45em; margin-left: 4px; }
   .track { flex: 1; min-width: 0; height: 22px; border-radius: 11px; background: rgba(255,255,255,.35); border: 3px solid #fff; position: relative; box-shadow: 0 3px 0 var(--shadow); }
   .fill { position: absolute; inset: 0 auto 0 0; width: 0%; border-radius: 8px; background: linear-gradient(90deg, var(--sun), var(--flame)); transition: width .3s; }
-  .goal-icon { position: absolute; right: -14px; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff8d6, #f3d77a 60%, #d9b44f); border: 3px solid #fff; }
+  .goal-icon { position: absolute; right: -16px; top: 50%; transform: translateY(-50%); width: 38px; height: 38px; border-radius: 50%; background: #fffaf0; border: 3px solid #fff; display: grid; place-items: center; }
+  .goal-icon svg { width: 26px; height: 26px; }
   .iconbtn { pointer-events: auto; width: 46px; height: 46px; border-radius: 50%; border: 3px solid #fff; background: rgba(29,26,58,.35); color: #fff; font-size: 22px; cursor: pointer; display: grid; place-items: center; flex: none; }
   .iconbtn:focus-visible, button:focus-visible { outline: 4px solid var(--sun); outline-offset: 2px; }
 
@@ -77,7 +78,7 @@
 
 <div class="hud">
   <div class="count"><span id="count">0</span><small>もぐ</small></div>
-  <div class="track"><div class="fill" id="fill"></div><div class="goal-icon" title="おつきさま"></div></div>
+  <div class="track"><div class="fill" id="fill"></div><div class="goal-icon" title="てっぺんの にんじん"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7 Q12 5 16 7 L12 22 Z" fill="#ff8a2b"/><path d="M12 7 L9 1 M12 7 L12 0.5 M12 7 L15 1" stroke="#4caf50" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg></div></div>
   <button class="iconbtn" id="soundBtn" aria-label="おと">♪</button>
   <button class="iconbtn" id="setBtn" aria-label="せってい">⚙</button>
 </div>
@@ -92,14 +93,14 @@
 <!-- はじめる -->
 <div class="sheet" id="startSheet">
   <div class="card">
-    <h1>もぐもぐ<br>ロケット</h1>
-    <p>もぐもぐ たべると ロケットが とぶよ！<br>おつきさままで いけるかな？</p>
+    <h1>もぐもぐ<br>うさぎ</h1>
+    <p>もぐもぐ たべると うさぎさんが きを のぼるよ！<br>てっぺんの にんじんまで いけるかな？</p>
     <div class="goals" id="goals">
       <button data-goal="30">30もぐ</button>
       <button data-goal="60">60もぐ</button>
       <button data-goal="100">100もぐ</button>
     </div>
-    <button class="big" id="startBtn">はっしゃ！</button>
+    <button class="big" id="startBtn">よーい どん！</button>
     <p class="hint">カメラで あごの うごきを みています（口を閉じて もぐもぐ すると数えます。口を開けて噛むと数えません）。映像はこの端末の中だけで使い、どこにも送りません。カメラの前に お子さんの顔が映るように置いてください。</p>
     <p class="err" id="startErr" hidden></p>
   </div>
@@ -127,7 +128,7 @@
 <!-- ゴール -->
 <div class="sheet" id="goalSheet" hidden>
   <div class="card">
-    <h1>おつきさまに<br>とうちゃく！</h1>
+    <h1>てっぺんに<br>とうちゃく！</h1>
     <p id="goalText"></p>
     <button class="big" id="againBtn">もういっかい</button>
   </div>
@@ -196,12 +197,12 @@ const rnd = (a, b) => a + Math.random() * (b - a);
 const lerp = (a, b, t) => a + (b - a) * t;
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 
-const stars = Array.from({ length: 140 }, () => ({ x: Math.random(), y: Math.random(), r: rnd(.6, 2.2), p: rnd(0, 6.28) }));
-let items = [];      // 雲・惑星など、下へ流れていくもの
-let parts = [];      // はじける星・ハート・文字
-let spawnAcc = 0;
+let items = [];      // えだ・くも・ともだちなど、下へ流れていくもの
+let parts = [];      // はじける星・ハート・はっぱ・文字
+let spawnAcc = 0, branchSide = 1;
 
-const SKY = [[0, [143, 211, 255], [214, 240, 255]], [.3, [92, 169, 240], [160, 214, 250]], [.5, [52, 70, 150], [100, 120, 200]], [.72, [22, 26, 70], [40, 40, 100]], [1, [10, 8, 34], [26, 18, 60]]];
+// 空の色：ねもと（あさの空）→ 雲の上 → てっぺん（ゆうやけ色）
+const SKY = [[0, [178, 228, 255], [226, 247, 214]], [.4, [130, 200, 250], [200, 235, 255]], [.7, [120, 180, 245], [255, 214, 230]], [1, [255, 196, 150], [255, 238, 190]]];
 function skyAt(p) {
   for (let i = 1; i < SKY.length; i++) {
     if (p <= SKY[i][0]) {
@@ -212,25 +213,22 @@ function skyAt(p) {
   }
   const l = SKY[SKY.length - 1]; return [`rgb(${l[1]})`, `rgb(${l[2]})`];
 }
+function trunkW() { return clamp(W * .26, 100, 160); }
 
 function spawnItem(p) {
-  if (p < .5 && Math.random() < 1 - p * 1.6) {
-    items.push({ kind: "cloud", x: rnd(-.1, 1.1) * W, y: -80, s: rnd(.6, 1.4), sp: rnd(.8, 1.2) });
-  } else if (p > .35 && Math.random() < .5) {
-    items.push({ kind: "spark", x: rnd(0, W), y: -20, s: rnd(4, 9), sp: rnd(1, 1.6), c: ["#ffe66d", "#ff9de2", "#9df3ff"][Math.floor(rnd(0, 3))] });
-  }
+  branchSide = -branchSide;
+  const r = Math.random();
+  items.push({ kind: "branch", side: branchSide, y: -60, len: rnd(.16, .3) * W, fruit: r < .3 ? "apple" : r < .5 ? "flower" : null, sp: 1, wob: rnd(0, 6) });
+  if (p > .4 && Math.random() < p) items.push({ kind: "cloud", x: rnd(-.1, 1.1) * W, y: -100, s: rnd(.7, 1.5), sp: .5 });
 }
-const PLANETS = [
-  { at: .45, color: ["#ff9e7a", "#e0603c"], ring: false, r: 46, side: .18 },
-  { at: .62, color: ["#ffd98a", "#d99a3c"], ring: true, r: 60, side: .8 },
-  { at: .8, color: ["#9be7c4", "#3a9e7a"], ring: false, r: 34, side: .22 },
-];
-
+// とちゅうで会える ともだち
+const FRIENDS = [{ at: .3, kind: "bird" }, { at: .55, kind: "butterfly" }, { at: .7, kind: "rainbow" }];
 function burst(x, y, n) {
-  const colors = ["#ffe66d", "#ff7a3d", "#ff9de2", "#9df3ff", "#b6ff8a"];
+  const colors = ["#ffe66d", "#ff7a3d", "#ff9de2", "#6cc35a", "#9df3ff"];
   for (let i = 0; i < n; i++) {
     const a = rnd(0, Math.PI * 2), s = rnd(2, 7);
-    parts.push({ type: Math.random() < .3 ? "heart" : "star", x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 2, life: 1, c: colors[i % colors.length], r: rnd(6, 12) });
+    const r = Math.random();
+    parts.push({ type: r < .25 ? "heart" : r < .5 ? "leaf" : "star", x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 2, life: 1, c: colors[i % colors.length], r: rnd(6, 12) });
   }
 }
 function floatText(text, x, y, size = 34, color = "#fff") {
@@ -254,14 +252,14 @@ function bite() {
   state.v = Math.min(state.v + 7, 26);
   biteSound(state.count);
   const rx = W / 2, ry = H * .6;
-  burst(rx, ry + 110, 10 + Math.min(state.combo, 10));
+  burst(rx, ry + 70, 10 + Math.min(state.combo, 10));
   floatText("もぐ！", rx + (state.count % 2 ? 110 : -110), ry - 20 + rnd(-30, 30), 30);
   if (state.count % 10 === 0 && state.count < state.goal) {
     fanfare();
     floatText(`${state.count}もぐ！`, W / 2, H * .35, 64, "#ffe66d");
     say(PRAISE[Math.floor(rnd(0, PRAISE.length))], 1800);
   } else if (state.combo === 5) {
-    say("レインボー ジェット！", 1600);
+    say("ぴょんぴょん ダッシュ！", 1600);
   }
   updateHud();
   if (state.count >= state.goal) finish();
@@ -270,7 +268,7 @@ function finish() {
   state.done = true;
   bigFanfare(); confetti();
   setTimeout(() => {
-    $("goalText").textContent = `${state.goal}もぐ たべて おつきさまに ついたよ！ごちそうさまでした！`;
+    $("goalText").textContent = `${state.goal}もぐ たべて きの てっぺんに ついたよ！おおきな にんじん みつけた！ごちそうさまでした！`;
     $("goalSheet").hidden = false;
   }, 2600);
 }
@@ -280,6 +278,7 @@ function updateHud() {
 }
 
 // ---------- 描画 ----------
+const INK = "#3a2a1e";
 function drawCloud(x, y, s, a = 1) {
   ctx.fillStyle = `rgba(255,255,255,${.9 * a})`;
   ctx.beginPath();
@@ -303,99 +302,179 @@ function drawHeart(x, y, r) {
   ctx.bezierCurveTo(x + r * .4, y - r * 1.1, x + r, y - r * .4, x, y + r * .4);
   ctx.fill();
 }
-function drawPlanet(it) {
-  const g = ctx.createRadialGradient(it.x - it.r * .3, it.y - it.r * .3, it.r * .1, it.x, it.y, it.r);
-  g.addColorStop(0, it.color[0]); g.addColorStop(1, it.color[1]);
-  if (it.ring) {
-    ctx.strokeStyle = "rgba(255,240,200,.75)"; ctx.lineWidth = 8;
-    ctx.beginPath(); ctx.ellipse(it.x, it.y, it.r * 1.7, it.r * .45, -.3, Math.PI, Math.PI * 2); ctx.stroke();
-  }
-  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(it.x, it.y, it.r, 0, Math.PI * 2); ctx.fill();
-  if (it.ring) {
-    ctx.beginPath(); ctx.ellipse(it.x, it.y, it.r * 1.7, it.r * .45, -.3, 0, Math.PI); ctx.stroke();
-  }
-}
-function drawMoon(x, y, r) {
-  ctx.save();
-  ctx.shadowColor = "rgba(255,240,170,.8)"; ctx.shadowBlur = 50;
-  const g = ctx.createRadialGradient(x - r * .3, y - r * .3, r * .1, x, y, r);
-  g.addColorStop(0, "#fffbe3"); g.addColorStop(1, "#e8c867");
-  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+function drawLeafShape(x, y, r, rot) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot);
+  ctx.beginPath(); ctx.ellipse(0, 0, r, r * .5, 0, 0, Math.PI * 2); ctx.fill();
   ctx.restore();
-  ctx.fillStyle = "rgba(200,160,70,.35)";
-  [[-.35, -.2, .16], [.3, .1, .22], [-.1, .4, .12], [.2, -.45, .1]].forEach(([dx, dy, rr]) => {
-    ctx.beginPath(); ctx.arc(x + dx * r, y + dy * r, rr * r, 0, Math.PI * 2); ctx.fill();
-  });
-  // うさぎ（月のもよう風）
-  ctx.fillStyle = "#fff"; ctx.font = `${r * .5}px ${getComputedStyle(document.documentElement).getPropertyValue("--display")}`;
+}
+function drawLeaves(x, y, r, sway) {
+  const blobs = [[0, 0, 1], [-.8, .2, .75], [.8, .15, .8], [-.35, -.6, .7], [.4, -.55, .72], [0, .55, .7]];
+  ctx.fillStyle = "#3f9e4a";
+  for (const [dx, dy, k] of blobs) { ctx.beginPath(); ctx.arc(x + dx * r + sway, y + dy * r, k * r, 0, Math.PI * 2); ctx.fill(); }
+  ctx.fillStyle = "#6cc35a";
+  for (const [dx, dy, k] of blobs.slice(0, 4)) { ctx.beginPath(); ctx.arc(x + dx * r * .8 + sway - r * .15, y + dy * r * .8 - r * .2, k * r * .55, 0, Math.PI * 2); ctx.fill(); }
+}
+function drawApple(x, y) {
+  ctx.fillStyle = "#e84a4a"; ctx.beginPath(); ctx.arc(x, y, 11, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "rgba(255,255,255,.6)"; ctx.beginPath(); ctx.arc(x - 4, y - 4, 3, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#3f9e4a"; drawLeafShape(x + 5, y - 13, 6, -.6);
+}
+function drawFlower(x, y) {
+  ctx.fillStyle = "#ffb3d1";
+  for (let i = 0; i < 5; i++) { const a = i * Math.PI * 2 / 5; ctx.beginPath(); ctx.arc(x + Math.cos(a) * 8, y + Math.sin(a) * 8, 6.5, 0, Math.PI * 2); ctx.fill(); }
+  ctx.fillStyle = "#ffd84d"; ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fill();
+}
+function drawBranch(it, now) {
+  const tw = trunkW();
+  const x0 = W / 2 + it.side * tw * .4, x1 = W / 2 + it.side * (tw / 2 + it.len), y0 = it.y, y1 = it.y - 46;
+  ctx.strokeStyle = "#7a4e2d"; ctx.lineCap = "round"; ctx.lineWidth = 18;
+  ctx.beginPath(); ctx.moveTo(x0, y0 + 12); ctx.quadraticCurveTo((x0 + x1) / 2, y0, x1, y1); ctx.stroke();
+  const sway = Math.sin(now / 900 + it.wob) * 3;
+  const lr = clamp(W * .07, 30, 46);
+  drawLeaves(x1, y1, lr, sway);
+  if (it.fruit === "apple") { drawApple(x1 - lr * .4 + sway, y1 + lr * .5); drawApple(x1 + lr * .5 + sway, y1 + lr * .2); }
+  else if (it.fruit === "flower") { drawFlower(x1 + sway, y1 - lr * .3); }
+}
+function drawTrunk(topY, bottomY) {
+  const tw = trunkW(), x = W / 2 - tw / 2, b = Math.min(H, bottomY);
+  if (b <= topY) return;
+  const g = ctx.createLinearGradient(x, 0, x + tw, 0);
+  g.addColorStop(0, "#6b4226"); g.addColorStop(.45, "#a8714a"); g.addColorStop(1, "#5e3a21");
+  ctx.fillStyle = g; ctx.fillRect(x, topY, tw, b - topY);
+  // きのかわの もよう（のぼると 下へながれる）
+  ctx.strokeStyle = "rgba(60,35,20,.35)"; ctx.lineWidth = 4; ctx.lineCap = "round";
+  const span = H + 160;
+  for (let k = 0; k < 14; k++) {
+    const y = ((k * 83 + state.travel) % span + span) % span - 80;
+    if (y < topY || y > b) continue;
+    const bx = x + tw * (.2 + (k * 37 % 60) / 100);
+    ctx.beginPath(); ctx.arc(bx, y, 12, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke();
+  }
+}
+function drawGround(gy) {
+  ctx.fillStyle = "#7fd36b";
+  ctx.beginPath(); ctx.ellipse(W * .2, gy + 70, W * .7, 120, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#68c158";
+  ctx.beginPath(); ctx.ellipse(W * .9, gy + 90, W * .55, 130, 0, 0, Math.PI * 2); ctx.fill();
+  // ねっこ
+  const tw = trunkW();
+  ctx.fillStyle = "#6b4226";
+  ctx.beginPath(); ctx.moveTo(W / 2 - tw / 2, gy - 20); ctx.quadraticCurveTo(W / 2 - tw * .8, gy + 10, W / 2 - tw, gy + 18); ctx.lineTo(W / 2 + tw, gy + 18); ctx.quadraticCurveTo(W / 2 + tw * .8, gy + 10, W / 2 + tw / 2, gy - 20); ctx.fill();
+  [[.12, 30], [.3, 50], [.75, 35], [.9, 55]].forEach(([fx, dy]) => drawFlower(W * fx, gy + dy));
+}
+function drawBird(it, now) {
+  ctx.save(); ctx.translate(it.x, it.y + Math.sin(now / 200) * 6); ctx.scale(it.dir, 1);
+  ctx.fillStyle = "#5bb7f0"; ctx.beginPath(); ctx.ellipse(0, 0, 22, 16, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(16, -8, 11, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#ff9f3d"; ctx.beginPath(); ctx.moveTo(26, -9); ctx.lineTo(35, -5); ctx.lineTo(26, -3); ctx.fill();
+  ctx.fillStyle = INK; ctx.beginPath(); ctx.arc(19, -10, 2.5, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#3d93d1";
+  const f = Math.sin(now / 90) * 14;
+  ctx.beginPath(); ctx.moveTo(-6, -4); ctx.lineTo(-20, -10 - f); ctx.lineTo(6, -4); ctx.fill();
+  ctx.restore();
+}
+function drawButterfly(it, now) {
+  ctx.save(); ctx.translate(it.x, it.y + Math.sin(now / 300) * 14);
+  const f = .35 + Math.abs(Math.sin(now / 120)) * .65;
+  ctx.scale(f, 1);
+  ctx.fillStyle = "#ff8fc7";
+  ctx.beginPath(); ctx.ellipse(-14, -8, 14, 12, -.4, 0, Math.PI * 2); ctx.ellipse(14, -8, 14, 12, .4, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#ffd84d";
+  ctx.beginPath(); ctx.ellipse(-10, 10, 9, 8, .4, 0, Math.PI * 2); ctx.ellipse(10, 10, 9, 8, -.4, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+  ctx.fillStyle = INK; ctx.beginPath(); ctx.ellipse(it.x, it.y + Math.sin(now / 300) * 14, 3, 14, 0, 0, Math.PI * 2); ctx.fill();
+}
+function drawRainbow(it) {
+  const cols = ["#ff6b6b", "#ffb13d", "#ffe66d", "#6dd68a", "#6dc8ff", "#b48cff"];
+  const R = Math.max(W, H) * .55;
+  ctx.globalAlpha = .45; ctx.lineWidth = R * .045;
+  cols.forEach((c, i) => { ctx.strokeStyle = c; ctx.beginPath(); ctx.arc(it.x, it.y + R, R - i * R * .045, Math.PI, Math.PI * 2); ctx.stroke(); });
+  ctx.globalAlpha = 1;
+}
+function drawCarrot(x, y, s, now) {
+  ctx.save(); ctx.translate(x, y); ctx.scale(s, s); ctx.rotate(Math.sin(now / 700) * .08);
+  ctx.shadowColor = "rgba(255,220,120,.9)"; ctx.shadowBlur = 30;
+  ctx.fillStyle = "#ff8a2b";
+  ctx.beginPath(); ctx.moveTo(-22, -20); ctx.quadraticCurveTo(0, -30, 22, -20); ctx.lineTo(0, 60); ctx.closePath(); ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.strokeStyle = "rgba(160,70,10,.5)"; ctx.lineWidth = 3;
+  [[-12, 0, 2, 0], [6, 14, 14, 14], [-6, 30, 2, 30]].forEach(([a, b, c, d]) => { ctx.beginPath(); ctx.moveTo(a, b); ctx.lineTo(c, d); ctx.stroke(); });
+  ctx.fillStyle = "#4caf50";
+  [-.5, 0, .5].forEach((r) => drawLeafShape(Math.sin(r) * 18, -36, 16, -Math.PI / 2 + r));
+  ctx.restore();
+}
+function drawCrown(cy, now) {
+  // てっぺんの はっぱの やま
+  const r = clamp(W * .14, 50, 90);
+  const blobs = [[-1.6, .5], [-.9, .1], [0, -.2], [.9, .1], [1.6, .5], [-1.2, .9], [0, .7], [1.2, .9], [-2.3, 1], [2.3, 1]];
+  ctx.fillStyle = "#3f9e4a";
+  for (const [dx, dy] of blobs) { ctx.beginPath(); ctx.arc(W / 2 + dx * r, cy + dy * r, r, 0, Math.PI * 2); ctx.fill(); }
+  ctx.fillStyle = "#6cc35a";
+  for (const [dx, dy] of blobs.slice(0, 5)) { ctx.beginPath(); ctx.arc(W / 2 + dx * r - r * .2, cy + dy * r - r * .3, r * .55, 0, Math.PI * 2); ctx.fill(); }
+  for (const [dx, dy] of [[-1.3, .3], [1.1, .6], [-.3, .9]]) drawApple(W / 2 + dx * r, cy + dy * r);
+  drawCarrot(W / 2 + r * 1.1, cy - r * 1.05, clamp(W / 500, .8, 1.3), now);
 }
 
-function drawRocket(x, y, t, now) {
+function drawRabbit(x, y, now) {
   const idle = now - state.lastBite;
-  const thrust = state.v > 1.2;
-  const tilt = Math.sin(t / 600) * .05 + (thrust ? Math.sin(t / 80) * .015 : 0);
-  ctx.save(); ctx.translate(x, y); ctx.rotate(tilt);
-  const S = clamp(Math.min(W, H) / 700, .65, 1.25); ctx.scale(S, S);
+  const moving = state.v > 1.2;
+  const ph = state.travel * .06;
+  const climb = moving ? Math.sin(ph) * 12 : 0;
+  ctx.save(); ctx.translate(x, y);
+  const S = clamp(Math.min(W, H) / 640, .75, 1.3); ctx.scale(S, S);
+  ctx.lineWidth = 3; ctx.strokeStyle = INK;
 
-  // ほのお
-  if (thrust || state.done) {
-    const len = 30 + state.v * 5 + Math.sin(t / 40) * 8;
-    const rainbow = state.combo >= 5 && idle < 2500;
-    const cols = rainbow ? ["#ff5e5e", "#ffb13d", "#ffe66d", "#6dff9e", "#6dc8ff", "#b46dff"] : ["#fff3b0", "#ffc93c", "#ff7a3d"];
-    cols.slice().reverse().forEach((c, i, arr) => {
-      const k = 1 - i / arr.length;
-      ctx.fillStyle = c;
-      ctx.beginPath();
-      ctx.moveTo(-22 * k - 4, 70);
-      ctx.quadraticCurveTo(0, 70 + len * (k + .3) * 1.4, 22 * k + 4, 70);
-      ctx.fill();
-    });
-  }
-  // はね
-  ctx.fillStyle = "#e8483f";
-  ctx.beginPath(); ctx.moveTo(-34, 30); ctx.lineTo(-62, 78); ctx.lineTo(-30, 70); ctx.fill();
-  ctx.beginPath(); ctx.moveTo(34, 30); ctx.lineTo(62, 78); ctx.lineTo(30, 70); ctx.fill();
+  // あし（みきを けって のぼる）
+  ctx.fillStyle = "#ffffff";
+  ctx.beginPath(); ctx.ellipse(-24, 62 - climb, 14, 20, .3, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.ellipse(24, 62 + climb, 14, 20, -.3, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  // しっぽ
+  ctx.beginPath(); ctx.arc(30, 40, 9, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
   // からだ
-  const g = ctx.createLinearGradient(-40, 0, 40, 0);
-  g.addColorStop(0, "#ffffff"); g.addColorStop(.7, "#f1ece4"); g.addColorStop(1, "#cfc6bb");
-  ctx.fillStyle = g;
-  ctx.beginPath();
-  ctx.moveTo(0, -110);
-  ctx.bezierCurveTo(52, -70, 46, 40, 34, 74);
-  ctx.lineTo(-34, 74);
-  ctx.bezierCurveTo(-46, 40, -52, -70, 0, -110);
-  ctx.fill();
-  ctx.strokeStyle = "#1d1a3a"; ctx.lineWidth = 4; ctx.stroke();
-  // さき
-  ctx.fillStyle = "#e8483f";
-  ctx.beginPath(); ctx.moveTo(0, -110); ctx.bezierCurveTo(24, -92, 32, -78, 34, -70); ctx.lineTo(-34, -70); ctx.bezierCurveTo(-32, -78, -24, -92, 0, -110); ctx.fill(); ctx.stroke();
-  // まど
-  ctx.fillStyle = "#bfe8ff"; ctx.beginPath(); ctx.arc(0, -18, 30, 0, Math.PI * 2); ctx.fill();
-  ctx.lineWidth = 6; ctx.strokeStyle = "#ffc93c"; ctx.stroke();
-  // かお（子どものおくちと同じように うごく）
-  ctx.fillStyle = "#ffe0c2"; ctx.beginPath(); ctx.arc(0, -16, 22, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = "#ff9f9f"; ctx.globalAlpha = .7;
-  ctx.beginPath(); ctx.arc(-13, -9, 4.5, 0, Math.PI * 2); ctx.arc(13, -9, 4.5, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(0, 22, 36, 44, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = "#fff0f4"; ctx.beginPath(); ctx.ellipse(0, 30, 22, 28, 0, 0, Math.PI * 2); ctx.fill();
+  // みみ
+  const sw = Math.sin(now / 320) * .07 + (moving ? Math.sin(ph) * .12 : 0);
+  for (const s of [-1, 1]) {
+    ctx.save(); ctx.translate(s * 15, -70); ctx.rotate(s * (.16 + sw));
+    ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.ellipse(0, -36, 12, 38, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#ffb3c6"; ctx.beginPath(); ctx.ellipse(0, -32, 5.5, 26, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+  // あたま
+  ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.ellipse(0, -40, 40, 36, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  // うで（みきに つかまる）
+  ctx.beginPath(); ctx.ellipse(-36, -2 + climb, 11, 20, .5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.ellipse(36, -2 - climb, 11, 20, -.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  // ほっぺ
+  ctx.fillStyle = "#ffb3c6"; ctx.globalAlpha = .75;
+  ctx.beginPath(); ctx.arc(-22, -30, 7, 0, Math.PI * 2); ctx.arc(22, -30, 7, 0, Math.PI * 2); ctx.fill();
   ctx.globalAlpha = 1;
+  // め
   const sleepy = !state.done && idle > 7000 && state.started;
   const blink = (now % 4000) < 120;
-  ctx.strokeStyle = "#1d1a3a"; ctx.fillStyle = "#1d1a3a"; ctx.lineWidth = 3; ctx.lineCap = "round";
+  ctx.fillStyle = INK; ctx.lineCap = "round";
   if (sleepy || blink) {
-    ctx.beginPath(); ctx.moveTo(-12, -20); ctx.lineTo(-5, -20); ctx.moveTo(5, -20); ctx.lineTo(12, -20); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-18, -44); ctx.lineTo(-8, -44); ctx.moveTo(8, -44); ctx.lineTo(18, -44); ctx.stroke();
   } else {
-    ctx.beginPath(); ctx.arc(-8, -21, 3.5, 0, Math.PI * 2); ctx.arc(8, -21, 3.5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(-13, -45, 5, 0, Math.PI * 2); ctx.arc(13, -45, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(-11.5, -47, 1.8, 0, Math.PI * 2); ctx.arc(14.5, -47, 1.8, 0, Math.PI * 2); ctx.fill();
   }
-  const mo = state.face ? clamp(state.jaw / Math.max(state.thOpen, .05), 0, 1.4) : 0;
-  ctx.fillStyle = "#b8384a";
-  ctx.beginPath(); ctx.ellipse(0, -7, 5 + mo * 2, 1.5 + mo * 6, 0, 0, Math.PI * 2); ctx.fill();
+  // はな と くち（子どもの もぐもぐに あわせて うごく）
+  ctx.fillStyle = "#ff8fab"; ctx.beginPath(); ctx.moveTo(-4.5, -36); ctx.lineTo(4.5, -36); ctx.lineTo(0, -31); ctx.closePath(); ctx.fill();
+  const mo = state.face ? clamp(state.jaw / Math.max(state.thOpen, .003), 0, 1.4) : 0;
+  ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(0, -31); ctx.lineTo(0, -27 + mo * 2);
+  ctx.moveTo(0, -27 + mo * 2); ctx.quadraticCurveTo(-5, -23 + mo * 3, -9, -27 + mo * 2);
+  ctx.moveTo(0, -27 + mo * 2); ctx.quadraticCurveTo(5, -23 + mo * 3, 9, -27 + mo * 2); ctx.stroke();
   ctx.restore();
 
   if (sleepy) {
     ctx.fillStyle = "#fff"; ctx.font = `28px ${cssFont()}`;
     const k = (now / 1000) % 2;
     ctx.globalAlpha = 1 - k / 2;
-    ctx.fillText("z", x + 50, y - 90 - k * 20);
-    ctx.fillText("Z", x + 70, y - 115 - k * 25);
+    ctx.fillText("z", x + 50, y - 110 - k * 20);
+    ctx.fillText("Z", x + 70, y - 135 - k * 25);
     ctx.globalAlpha = 1;
   }
 }
@@ -406,10 +485,10 @@ function drawBubble(text, x, y) {
   ctx.font = `${clamp(W / 22, 20, 30)}px ${cssFont()}`;
   const w = ctx.measureText(text).width + 36, h = 54;
   const bx = clamp(x - w / 2, 12, W - w - 12), by = y - h;
-  ctx.fillStyle = "#fffaf0"; ctx.strokeStyle = "#1d1a3a"; ctx.lineWidth = 4;
+  ctx.fillStyle = "#fffaf0"; ctx.strokeStyle = INK; ctx.lineWidth = 4;
   ctx.beginPath(); ctx.roundRect(bx, by, w, h, 22); ctx.fill(); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(x - 10, by + h - 2); ctx.lineTo(x, by + h + 16); ctx.lineTo(x + 10, by + h - 2); ctx.fill();
-  ctx.fillStyle = "#1d1a3a"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.fillStyle = INK; ctx.textAlign = "center"; ctx.textBaseline = "middle";
   ctx.fillText(text, bx + w / 2, by + h / 2 + 2);
 }
 
@@ -432,57 +511,50 @@ function frame(t) {
   g.addColorStop(0, top); g.addColorStop(1, bot);
   ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
 
-  // 星空（宇宙に近づくほど見える）
-  const sa = clamp((p - .3) / .3, 0, 1);
-  if (sa > 0) {
-    ctx.fillStyle = "#fff";
-    for (const s of stars) {
-      s.y += scroll * .0006 * s.r; if (s.y > 1) { s.y -= 1; s.x = Math.random(); }
-      ctx.globalAlpha = sa * (.5 + .5 * Math.sin(now / 500 + s.p));
-      ctx.beginPath(); ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2); ctx.fill();
-    }
-    ctx.globalAlpha = 1;
-  }
-
-  // 地面（さいしょだけ）
-  const gy = H * .82 + state.travel * .8;
-  if (gy < H + 10) {
-    ctx.fillStyle = "#6fcf6a";
-    ctx.beginPath(); ctx.ellipse(W * .3, gy + 60, W * .6, 110, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "#58b956";
-    ctx.beginPath(); ctx.ellipse(W * .85, gy + 80, W * .5, 120, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "#8a6a4a"; ctx.fillRect(W / 2 - 60, gy - 6, 120, 14);
-  }
-
-  // わき役たち
+  // えだ・くも・ともだち を だす
   spawnAcc += scroll;
-  while (spawnAcc > 120) { spawnAcc -= 120; spawnItem(p); }
-  for (const pl of PLANETS) {
-    if (p >= pl.at && !state.planetsSpawned.has(pl.at)) {
-      state.planetsSpawned.add(pl.at);
-      items.push({ kind: "planet", x: pl.side * W, y: -pl.r * 2, r: pl.r, ring: pl.ring, color: pl.color, sp: .35 });
+  while (spawnAcc > 200) { spawnAcc -= 200; spawnItem(p); }
+  for (const f of FRIENDS) {
+    if (p >= f.at && !state.planetsSpawned.has(f.at)) {
+      state.planetsSpawned.add(f.at);
+      if (f.kind === "rainbow") items.push({ kind: "rainbow", x: W / 2, y: -H * .05, sp: .2 });
+      else items.push({ kind: f.kind, x: f.kind === "bird" ? -50 : W + 50, y: H * rnd(.2, .35), sp: .3, dir: f.kind === "bird" ? 1 : -1 });
     }
   }
   for (const it of items) {
-    it.y += scroll * it.sp * (it.kind === "planet" ? 1 : 1.4) + (it.kind === "planet" ? .15 * dt : 0);
-    if (it.kind === "cloud") drawCloud(it.x, it.y, it.s, 1 - sa * .7);
-    else if (it.kind === "planet") drawPlanet(it);
-    else { ctx.fillStyle = it.c; drawStarShape(it.x, it.y, it.s, now / 400); }
+    it.y += scroll * it.sp;
+    if (it.kind === "bird" || it.kind === "butterfly") it.x += it.dir * 1.4 * dt;
   }
-  items = items.filter((it) => it.y < H + 200);
+  items = items.filter((it) => it.y < H + 220 && (it.x === undefined || (it.x > -120 && it.x < W + 120)));
 
-  // おつきさま
-  const rocketY = H * .62 + Math.sin(now / 500) * 6 - (state.v > 1 ? 18 : 0);
-  if (p > .82) {
-    const k = clamp((p - .82) / .18, 0, 1);
-    const r = Math.min(W, H) * lerp(.12, .24, k);
-    drawMoon(W / 2, lerp(-r, H * .2, k), r);
+  // うしろ：にじ と くも
+  for (const it of items) if (it.kind === "rainbow") drawRainbow(it);
+  for (const it of items) if (it.kind === "cloud") drawCloud(it.x, it.y, it.s);
+
+  // てっぺん
+  let crownY = null;
+  if (p > .82) crownY = lerp(-140, H * .32, clamp((p - .82) / .18, 0, 1));
+
+  // みき と じめん
+  const gy = H * .86 + state.travel * .8;
+  drawTrunk(crownY ?? 0, gy);
+  if (gy < H + 60) drawGround(gy);
+  for (const it of items) if (it.kind === "branch") drawBranch(it, now);
+  if (crownY !== null) drawCrown(crownY, now);
+  for (const it of items) {
+    if (it.kind === "bird") drawBird(it, now);
+    else if (it.kind === "butterfly") drawButterfly(it, now);
   }
 
-  // ロケット
-  let rx = W / 2, ry = rocketY;
-  if (state.done) ry = lerp(rocketY, H * .2 + Math.min(W, H) * .24 + 70, clamp((now - state.lastBite) / 1800, 0, 1));
-  drawRocket(rx, ry, now, now);
+  // うさぎ
+  const baseY = H * .6 + Math.sin(now / 500) * 4 - (state.v > 1 ? 14 : 0);
+  let rx = W / 2, ry = baseY;
+  if (state.done && crownY !== null) ry = lerp(baseY, crownY - 30, clamp((now - state.lastBite) / 1800, 0, 1));
+  // れんぞく もぐもぐ で キラキラの あしあと
+  if (state.combo >= 5 && now - state.lastBite < 2500 && state.v > 1.2 && Math.random() < .5 * dt) {
+    parts.push({ type: "star", x: rx + rnd(-30, 30), y: ry + 80, vx: rnd(-1, 1), vy: rnd(1, 3), life: 1, c: `hsl(${(now / 5) % 360},90%,65%)`, r: rnd(5, 9) });
+  }
+  drawRabbit(rx, ry, now);
 
   // パーティクル
   for (const q of parts) {
@@ -493,10 +565,11 @@ function frame(t) {
     ctx.fillStyle = q.c;
     if (q.type === "star") drawStarShape(q.x, q.y, q.r, q.life * 4);
     else if (q.type === "heart") drawHeart(q.x, q.y, q.r);
+    else if (q.type === "leaf") drawLeafShape(q.x, q.y, q.r, q.life * 6);
     else if (q.type === "conf") { ctx.save(); ctx.translate(q.x, q.y); ctx.rotate(q.rot); ctx.fillRect(-q.r / 2, -q.r / 4, q.r, q.r / 2); ctx.restore(); }
     else {
       ctx.font = `${q.size}px ${cssFont()}`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-      ctx.lineWidth = 6; ctx.strokeStyle = "rgba(29,26,58,.8)"; ctx.strokeText(q.text, q.x, q.y); ctx.fillText(q.text, q.x, q.y);
+      ctx.lineWidth = 6; ctx.strokeStyle = "rgba(58,42,30,.8)"; ctx.strokeText(q.text, q.x, q.y); ctx.fillText(q.text, q.x, q.y);
     }
   }
   ctx.globalAlpha = 1;
@@ -505,10 +578,11 @@ function frame(t) {
   // ふきだし
   if (state.started && !state.done) {
     const idle = now - state.lastBite;
-    if (now < state.msgUntil) drawBubble(state.msg, rx, ry - 130);
-    else if (!state.face && cameraOn) drawBubble("おかお みせて〜", rx, ry - 130);
-    else if (idle > 15000) drawBubble("おなか ぺこぺこ…", rx, ry - 130);
-    else if (idle > 6000) drawBubble("もぐもぐ してね！", rx, ry - 130);
+    const by = ry - 150;
+    if (now < state.msgUntil) drawBubble(state.msg, rx, by);
+    else if (!state.face && cameraOn) drawBubble("おかお みせて〜", rx, by);
+    else if (idle > 15000) drawBubble("おなか ぺこぺこ…", rx, by);
+    else if (idle > 6000) drawBubble("もぐもぐ してね！", rx, by);
   }
 
   detect(now);
