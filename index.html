@@ -46,6 +46,22 @@
   .iconbtn:focus-visible, button:focus-visible { outline: 4px solid var(--sun); outline-offset: 2px; }
 
   /* カメラの小窓 */
+  /* たべもの ボタン（左下。右下は カメラ） */
+  .foods { position: fixed; left: max(12px, env(safe-area-inset-left)); bottom: max(12px, env(safe-area-inset-bottom)); right: calc(max(14px, env(safe-area-inset-right)) + clamp(120px, 22vw, 200px) + 10px); display: flex; gap: 8px; z-index: 2; }
+  .food { flex: 1; max-width: 104px; min-width: 0; position: relative; display: grid; justify-items: center; gap: 2px; padding: 8px 4px 6px; border-radius: 20px; border: 4px solid #fff; background: rgba(255,250,240,.85); color: var(--ink); font-family: var(--display); font-size: clamp(10px, 2.6vw, 13px); line-height: 1.15; cursor: pointer; box-shadow: 0 4px 0 var(--shadow); transition: transform .15s; }
+  .food svg { width: clamp(30px, 9vw, 46px); height: clamp(30px, 9vw, 46px); }
+  .food b { position: absolute; top: -10px; right: -6px; min-width: 26px; height: 26px; padding: 0 5px; box-sizing: border-box; border-radius: 13px; background: var(--c); color: #fff; font-size: 14px; display: grid; place-items: center; border: 3px solid #fff; font-variant-numeric: tabular-nums; }
+  .food[aria-pressed="true"] { background: var(--c); color: #fff; border-color: var(--ink); transform: translateY(-6px); }
+  .food[aria-pressed="true"] b { background: var(--ink); }
+  .food.nudge { animation: nudge .6s ease-in-out 3; }
+  @keyframes nudge { 0%, 100% { transform: translateY(0) rotate(0); } 25% { transform: translateY(-10px) rotate(-6deg); } 75% { transform: translateY(-10px) rotate(6deg); } }
+  .food:focus-visible { outline: 4px solid var(--sun); outline-offset: 2px; }
+  .balance { display: grid; gap: 8px; text-align: left; }
+  .balance div { display: grid; grid-template-columns: 6.5em 1fr 2.5em; align-items: center; gap: 8px; font-weight: 700; }
+  .balance i { display: block; height: 16px; border-radius: 8px; background: var(--c); min-width: 4px; }
+  .balance em { font-style: normal; text-align: right; font-variant-numeric: tabular-nums; }
+  .bstars { font-size: 40px; letter-spacing: 6px; color: #f5b400; line-height: 1; }
+  @media (prefers-reduced-motion: reduce) { .food.nudge { animation: none; } }
   .cam { position: fixed; right: max(14px, env(safe-area-inset-right)); bottom: max(14px, env(safe-area-inset-bottom)); width: clamp(120px, 22vw, 200px); border-radius: 18px; overflow: hidden; border: 4px solid #fff; background: #000; box-shadow: 0 4px 0 var(--shadow); }
   .cam video { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; transform: scaleX(-1); }
   .meter { height: 14px; background: #2a2650; position: relative; }
@@ -83,6 +99,22 @@
   <button class="iconbtn" id="setBtn" aria-label="せってい">⚙</button>
 </div>
 
+<!-- いま たべている もの（たべる まえに タップ） -->
+<nav class="foods" id="foods" aria-label="いま たべている もの">
+  <button class="food" data-food="meat" style="--c:#e8574a">
+    <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="26" y="26" width="6" height="16" rx="3" transform="rotate(-45 29 34)" fill="#fff" stroke="#3a2a1e" stroke-width="2.5"/><circle cx="37" cy="39" r="4" fill="#fff" stroke="#3a2a1e" stroke-width="2.5"/><ellipse cx="20" cy="20" rx="14" ry="12" transform="rotate(-45 20 20)" fill="#c8693a" stroke="#3a2a1e" stroke-width="2.5"/><ellipse cx="16" cy="16" rx="5" ry="3" transform="rotate(-45 16 16)" fill="#e89a6a"/></svg>
+    <span>おにく<br>おさかな</span><b>0</b>
+  </button>
+  <button class="food" data-food="veg" style="--c:#3fae4a">
+    <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M20 28 L18 44 L30 44 L28 28 Z" fill="#9bd36b" stroke="#3a2a1e" stroke-width="2.5" stroke-linejoin="round"/><circle cx="14" cy="22" r="8" fill="#3f9e4a" stroke="#3a2a1e" stroke-width="2.5"/><circle cx="34" cy="22" r="8" fill="#3f9e4a" stroke="#3a2a1e" stroke-width="2.5"/><circle cx="24" cy="14" r="10" fill="#4caf50" stroke="#3a2a1e" stroke-width="2.5"/><circle cx="24" cy="25" r="7" fill="#4caf50"/></svg>
+    <span>やさい<br>くだもの</span><b>0</b>
+  </button>
+  <button class="food" data-food="carb" style="--c:#f2b632">
+    <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 5 C30 5 44 32 42 38 C40 44 8 44 6 38 C4 32 18 5 24 5 Z" fill="#fff" stroke="#3a2a1e" stroke-width="2.5" stroke-linejoin="round"/><rect x="15" y="30" width="18" height="12" rx="2" fill="#2f3b2f"/></svg>
+    <span>ごはん<br>パン</span><b>0</b>
+  </button>
+</nav>
+
 <div class="cam" id="cam" hidden>
   <video id="video" playsinline muted></video>
   <div class="camnote" id="camnote" hidden>おかおが みえないよ</div>
@@ -95,6 +127,7 @@
   <div class="card">
     <h1>もぐもぐ<br>うさぎ</h1>
     <p>もぐもぐ たべると うさぎさんが きを のぼるよ！<br>てっぺんの にんじんまで いけるかな？</p>
+    <p><b>たべる まえに、したの「おにく」「やさい」「ごはん」を おしてね。</b><br>いろいろ じゅんばんに たべると ボーナスで ぐんぐん のぼるよ！</p>
     <div class="goals" id="goals">
       <button data-goal="30">30もぐ</button>
       <button data-goal="60">60もぐ</button>
@@ -130,6 +163,9 @@
   <div class="card">
     <h1>てっぺんに<br>とうちゃく！</h1>
     <p id="goalText"></p>
+    <div class="bstars" id="goalStars"></div>
+    <p id="balanceText"></p>
+    <div class="balance" id="balanceBars"></div>
     <button class="big" id="againBtn">もういっかい</button>
   </div>
 </div>
@@ -148,6 +184,7 @@ const state = {
   lipTh: store.get("lipTh", 0.04), lipsOpen: false,
   sound: store.get("sound", true),
   count: 0, shown: 0, v: 0, travel: 0, combo: 0,
+  food: null, eaten: { meat: 0, veg: 0, carb: 0 }, power: 0, hintAt: -1e9, rainbows: 0,
   lastBite: -1e9, started: false, done: false,
   jaw: 0, mouthOpen: false, face: false,
   msg: "", msgUntil: 0, blinkAt: 0,
@@ -223,8 +260,8 @@ function spawnItem(p) {
 }
 // とちゅうで会える ともだち
 const FRIENDS = [{ at: .3, kind: "bird" }, { at: .55, kind: "butterfly" }, { at: .7, kind: "rainbow" }];
-function burst(x, y, n) {
-  const colors = ["#ffe66d", "#ff7a3d", "#ff9de2", "#6cc35a", "#9df3ff"];
+function burst(x, y, n, palette) {
+  const colors = palette || ["#ffe66d", "#ff7a3d", "#ff9de2", "#6cc35a", "#9df3ff"];
   for (let i = 0; i < n; i++) {
     const a = rnd(0, Math.PI * 2), s = rnd(2, 7);
     const r = Math.random();
@@ -241,6 +278,25 @@ function confetti() {
 }
 function say(text, ms = 2200) { state.msg = text; state.msgUntil = performance.now() + ms; }
 
+// ---------- たべものの なかま ----------
+const FOODS = {
+  meat: { short: "おにく", name: "おにく・おさかな", color: "#e8574a", parts: ["#e8574a", "#ff9a6a", "#ffd1b8"] },
+  veg: { short: "やさい", name: "やさい・くだもの", color: "#3fae4a", parts: ["#3fae4a", "#9bd36b", "#ff8a2b"] },
+  carb: { short: "ごはん", name: "ごはん・パン", color: "#f2b632", parts: ["#f2b632", "#ffffff", "#ffe08a"] },
+};
+const KEYS = Object.keys(FOODS);
+const lowestFood = () => KEYS.reduce((a, b) => (state.eaten[b] < state.eaten[a] ? b : a));
+function nudge(key) {
+  const el = document.querySelector(`.food[data-food="${key}"]`);
+  el.classList.remove("nudge"); void el.offsetWidth; el.classList.add("nudge");
+}
+function selectFood(key) {
+  state.food = key;
+  document.querySelectorAll(".food").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.food === key)));
+  if (ac) { const t = ac.currentTime; tone(784, t, .1, "triangle", .1); tone(1047, t + .06, .12, "triangle", .1); }
+  if (state.started && !state.done) say(`${FOODS[key].short} だね！`, 1200);
+}
+
 // ---------- 1もぐ ----------
 const PRAISE = ["もぐもぐ！", "おいしいね！", "すごい！", "いいぞ！", "パワーアップ！", "ぐんぐん！"];
 function bite() {
@@ -249,32 +305,69 @@ function bite() {
   state.combo = now - state.lastBite < 2500 ? state.combo + 1 : 1;
   state.lastBite = now;
   state.count++;
-  state.v = Math.min(state.v + 7, 26);
-  biteSound(state.count);
   const rx = W / 2, ry = H * .6;
-  burst(rx, ry + 70, 10 + Math.min(state.combo, 10));
-  floatText("もぐ！", rx + (state.count % 2 ? 110 : -110), ry - 20 + rnd(-30, 30), 30);
-  if (state.count % 10 === 0 && state.count < state.goal) {
+
+  // バランス：いちばん すくない なかまを たべると ボーナス、ひとつだけ たくさん だと すこし よわく
+  let value = 1, note = null;
+  const key = state.food;
+  if (key) {
+    const e = state.eaten, total = e.meat + e.veg + e.carb;
+    const min = Math.min(e.meat, e.veg, e.carb), max = Math.max(e.meat, e.veg, e.carb);
+    if (total >= 2 && e[key] === min && max > min) { value = 1.6; note = "バランス ボーナス！"; }
+    else if (total >= 6 && e[key] / total > .5) {
+      value = .6;
+      const low = lowestFood();
+      if (now - state.hintAt > 6000) { state.hintAt = now; say(`${FOODS[low].short}も たべてね！`, 2400); nudge(low); }
+    }
+    e[key]++;
+    // 3つの なかまが そろうたびに にじいろ ボーナス
+    const r = Math.min(e.meat, e.veg, e.carb);
+    if (r > state.rainbows) { state.rainbows = r; value += 1; note = "にじいろ バランス！"; fanfare(); }
+  } else if (now - state.hintAt > 8000) {
+    state.hintAt = now; say("なにを たべてる？", 2600); KEYS.forEach(nudge);
+  }
+  state.power += value;
+  state.v = Math.min(state.v + 7 * value, 30);
+  biteSound(state.count);
+  burst(rx, ry + 70, 10 + Math.min(state.combo, 10), key ? FOODS[key].parts : null);
+  floatText("もぐ！", rx + (state.count % 2 ? 110 : -110), ry - 20 + rnd(-30, 30), 30, key ? FOODS[key].color : "#fff");
+  if (note) floatText(note, W / 2, H * .3, note.startsWith("にじ") ? 44 : 34, note.startsWith("にじ") ? "#b48cff" : "#9bff9b");
+  if (state.count % 10 === 0 && state.power < state.goal) {
+    const e = state.eaten, low = lowestFood(), max = Math.max(e.meat, e.veg, e.carb);
     fanfare();
-    floatText(`${state.count}もぐ！`, W / 2, H * .35, 64, "#ffe66d");
-    say(PRAISE[Math.floor(rnd(0, PRAISE.length))], 1800);
-  } else if (state.combo === 5) {
+    floatText(`${state.count}もぐ！`, W / 2, H * .38, 64, "#ffe66d");
+    if (key && max - e[low] >= 3) { say(`つぎは ${FOODS[low].short} たべてみよう！`, 2600); nudge(low); }
+    else say(PRAISE[Math.floor(rnd(0, PRAISE.length))], 1800);
+  } else if (state.combo === 5 && !note) {
     say("ぴょんぴょん ダッシュ！", 1600);
   }
   updateHud();
-  if (state.count >= state.goal) finish();
+  if (state.power >= state.goal) finish();
 }
 function finish() {
   state.done = true;
   bigFanfare(); confetti();
-  setTimeout(() => {
-    $("goalText").textContent = `${state.goal}もぐ たべて きの てっぺんに ついたよ！おおきな にんじん みつけた！ごちそうさまでした！`;
-    $("goalSheet").hidden = false;
-  }, 2600);
+  const e = state.eaten, total = e.meat + e.veg + e.carb;
+  // ★の かず = 20% いじょう たべた なかまの かず
+  const stars = total ? KEYS.filter((k) => e[k] / total >= .2).length : 0;
+  $("goalText").textContent = `${state.count}もぐ たべて きの てっぺんに ついたよ！ごちそうさまでした！`;
+  $("goalStars").textContent = total ? "★".repeat(stars) + "☆".repeat(3 - stars) : "";
+  $("balanceText").textContent = !total ? "" : stars === 3 ? "バランス めいじん！ ぜんぶの なかまを たべたね！"
+    : `${KEYS.filter((k) => e[k] / total < .2).map((k) => FOODS[k].short).join("と ")}も たべると ★が ふえるよ！`;
+  const bars = $("balanceBars");
+  bars.replaceChildren(...(total ? KEYS.map((k) => {
+    const row = document.createElement("div"); row.style.setProperty("--c", FOODS[k].color);
+    const label = document.createElement("span"); label.textContent = FOODS[k].short;
+    const bar = document.createElement("i"); bar.style.width = (e[k] / total * 100) + "%";
+    const n = document.createElement("em"); n.textContent = e[k];
+    row.append(label, bar, n); return row;
+  }) : []));
+  setTimeout(() => { $("goalSheet").hidden = false; }, 2600);
 }
 function updateHud() {
   $("count").textContent = state.count;
-  $("fill").style.width = Math.min(100, state.count / state.goal * 100) + "%";
+  $("fill").style.width = Math.min(100, state.power / state.goal * 100) + "%";
+  for (const b of document.querySelectorAll(".food")) b.querySelector("b").textContent = state.eaten[b.dataset.food];
 }
 
 // ---------- 描画 ----------
@@ -496,7 +589,7 @@ let lastT = performance.now();
 function frame(t) {
   const dt = clamp((t - lastT) / 16.7, 0, 3); lastT = t;
   const now = t;
-  state.shown = lerp(state.shown, state.count, .06 * dt);
+  state.shown = lerp(state.shown, state.power, .06 * dt);
   const p = clamp(state.shown / state.goal, 0, 1);
 
   // 速さは だんだん おちる → 食べないと止まる
@@ -668,6 +761,7 @@ document.querySelectorAll("#goals button").forEach((b) => b.addEventListener("cl
   state.goal = +b.dataset.goal; store.set("goal", state.goal); markGoal(); updateHud();
 }));
 markGoal(); updateHud();
+document.querySelectorAll(".food").forEach((b) => b.addEventListener("click", () => selectFood(b.dataset.food)));
 
 $("startBtn").addEventListener("click", async () => {
   try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch {}
@@ -690,7 +784,7 @@ $("lipSens").addEventListener("input", (e) => { state.lipTh = +e.target.value; s
 $("closeSet").addEventListener("click", () => { $("setSheet").hidden = true; });
 $("sens").addEventListener("input", (e) => { state.thOpen = +e.target.value; store.set("chewTh", state.thOpen); showMeter(); });
 function reset() {
-  Object.assign(state, { count: 0, shown: 0, v: 0, travel: 0, combo: 0, done: false, lastBite: performance.now() });
+  Object.assign(state, { count: 0, shown: 0, v: 0, travel: 0, combo: 0, done: false, lastBite: performance.now(), power: 0, rainbows: 0, hintAt: -1e9, eaten: { meat: 0, veg: 0, carb: 0 } });
   state.planetsSpawned = new Set(); items = []; parts = [];
   updateHud(); say("いただきます！", 2500);
 }
